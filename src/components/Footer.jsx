@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Film, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
@@ -32,11 +33,11 @@ const Footer = () => {
                     <div>
                         <h4 style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>Snabblänkar</h4>
                         <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                            <li><a href="#tjanster" style={{ color: 'var(--text-secondary)' }}>Våra Tjänster</a></li>
-                            <li><a href="#processen" style={{ color: 'var(--text-secondary)' }}>Hur det fungerar</a></li>
-                            <li><a href="#priser" style={{ color: 'var(--text-secondary)' }}>Prislista</a></li>
-                            <li><a href="#" style={{ color: 'var(--text-secondary)' }}>Vanliga frågor (FAQ)</a></li>
-                            <li><a href="#" style={{ color: 'var(--text-secondary)' }}>Allmänna villkor</a></li>
+                            <li><a href="/#tjanster" style={{ color: 'var(--text-secondary)' }}>Våra Tjänster</a></li>
+                            <li><a href="/#priser" style={{ color: 'var(--text-secondary)' }}>Prislista</a></li>
+                            <li><a href="/#processen" style={{ color: 'var(--text-secondary)' }}>Så fungerar det</a></li>
+                            <li><a href="/#omdomen" style={{ color: 'var(--text-secondary)' }}>Omdömen</a></li>
+                            <li><a href="/#faq" style={{ color: 'var(--text-secondary)' }}>Vanliga frågor</a></li>
                         </ul>
                     </div>
 
@@ -77,8 +78,7 @@ const Footer = () => {
                 }}>
                     <p>&copy; {new Date().getFullYear()} Svensk Digitalisering AB. Alla rättigheter förbehållna.</p>
                     <div style={{ display: 'flex', gap: '1.5rem' }}>
-                        <a href="#">Integritetspolicy</a>
-                        <a href="#">Cookies</a>
+                        <Link to="/villkor">Användarvillkor</Link>
                     </div>
                 </div>
             </div>

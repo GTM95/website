@@ -10,15 +10,30 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import UpdatePassword from './pages/UpdatePassword';
+import Booking from './pages/Booking';
+import Terms from './pages/Terms';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
+
+import BeforeAfter from './components/BeforeAfter';
+import Calculator from './components/Calculator';
+import Testimonials from './components/Testimonials';
+import Studio from './components/Studio';
+import FAQ from './components/FAQ';
+import FormatGuide from './components/FormatGuide';
 
 const Home = () => (
   <>
     <Hero />
+    <BeforeAfter />
     <Services />
+    <FormatGuide />
     <Process />
     <Pricing />
+    <Calculator />
+    <Testimonials />
+    <Studio />
+    <FAQ />
   </>
 );
 
@@ -31,6 +46,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/update-password" element={<UpdatePassword />} />
+          <Route path="/boka" element={<Booking />} />
+          <Route path="/villkor" element={<Terms />} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />

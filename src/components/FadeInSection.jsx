@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const FadeInSection = ({ children }) => {
+const FadeInSection = ({ children, delay = 0, direction = 'up', duration = 0.8 }) => {
     const [isVisible, setVisible] = useState(false);
     const domRef = useRef();
 
@@ -22,11 +22,9 @@ const FadeInSection = ({ children }) => {
             observer.observe(currentRef);
         }
 
-        // Fallback: If IntersectionObserver fails to trigger within 2 seconds
-        // (e.g. due to CSS layout issues on mount), force it to be visible.
         const fallbackTimer = setTimeout(() => {
             setVisible(true);
-        }, 2000);
+        }, 3000);
 
         return () => {
             clearTimeout(fallbackTimer);
@@ -34,13 +32,33 @@ const FadeInSection = ({ children }) => {
         };
     }, []);
 
+    const getInitialTransform = () => {
+        switch (direction) {
+            case 'left': return 'translateX(-50px)';
+            case 'right': return 'translateX(50px)';
+            case 'scale': return 'scale(0.9)';
+            case 'up':
+            default: return 'translateY(40px)';
+        }
+    };
+
+    const getFinalTransform = () => {
+        switch (direction) {
+            case 'left':
+            case 'right': return 'translateX(0)';
+            case 'scale': return 'scale(1)';
+            case 'up':
+            default: return 'translateY(0)';
+        }
+    };
+
     return (
         <div
             ref={domRef}
             style={{
                 opacity: isVisible ? 1 : 0,
-                transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
-                transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+                transform: isVisible ? getFinalTransform() : getInitialTransform(),
+                transition: `opacity ${duration}s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform ${duration}s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
                 willChange: 'opacity, transform'
             }}
         >

@@ -11,11 +11,11 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                fetchProfile(session.user.id);
+        // Get initial user securely
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            setUser(user ?? null);
+            if (user) {
+                fetchProfile(user.id);
             } else {
                 setLoading(false);
             }
@@ -64,11 +64,11 @@ export const AuthProvider = ({ children }) => {
         return supabase.auth.signInWithPassword({ email, password });
     };
 
-    const registerEmail = async (email, password, fullName) => {
+    const registerEmail = async (email, password, firstName, lastName, marketingConsent = false) => {
         return supabase.auth.signUp({
             email,
             password,
-            options: { data: { full_name: fullName } }
+            options: { data: { first_name: firstName, last_name: lastName, marketing_consent: marketingConsent } }
         });
     };
 
@@ -80,6 +80,27 @@ export const AuthProvider = ({ children }) => {
 
     const updatePassword = async (newPassword) => {
         return supabase.auth.updateUser({ password: newPassword });
+    };
+
+    const updateProfile = async (updates) => {
+        if (!user) return { error: { message: "Ingen inloggad användare." } };
+        
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update(updates)
+                .eq('id', user.id);
+
+            if (error) throw error;
+            
+            // Uppdatera lokal profil-state så den i UI reflekterar ändringen 
+            setProfile(prev => ({ ...prev, ...updates }));
+            
+            return { error: null };
+        } catch (error) {
+            console.error("Fel vid uppdatering av profil:", error);
+            return { error };
+        }
     };
 
     const logout = () => {
@@ -96,6 +117,7 @@ export const AuthProvider = ({ children }) => {
             registerEmail,
             resetPassword,
             updatePassword,
+            updateProfile,
             logout
         }}>
             {!loading && children}

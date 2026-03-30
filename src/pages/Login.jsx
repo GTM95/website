@@ -9,7 +9,9 @@ const Login = () => {
     const [resetSent, setResetSent] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [fullName, setFullName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [marketingConsent, setMarketingConsent] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -26,11 +28,19 @@ const Login = () => {
                 if (error) throw error;
                 setResetSent(true);
             } else if (isLogin) {
-                const { error } = await loginEmail(email, password);
+                const { data, error } = await loginEmail(email, password);
                 if (error) throw error;
-                navigate('/dashboard');
+
+                // Kontrollera om användaren är admin för att skicka dem till rätt ställe direkt
+                let isAdmin = false;
+                if (data?.user) {
+                    const { data: profileData } = await import('../lib/supabase').then(m => m.supabase.from('profiles').select('role').eq('id', data.user.id).single());
+                    if (profileData?.role === 'admin') isAdmin = true;
+                }
+
+                navigate(isAdmin ? '/admin' : '/dashboard');
             } else {
-                const { error } = await registerEmail(email, password, fullName);
+                const { error } = await registerEmail(email, password, firstName, lastName, marketingConsent);
                 if (error) throw error;
                 navigate('/dashboard');
             }
@@ -77,16 +87,48 @@ const Login = () => {
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {!isLogin && !isResetting && (
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Fullständigt Namn</label>
-                            <input
-                                type="text"
-                                value={fullName}
-                                onChange={e => setFullName(e.target.value)}
-                                required={!isLogin && !isResetting}
-                                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-muted)', color: 'white' }}
-                            />
-                        </div>
+                        <>
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Förnamn</label>
+                                    <input
+                                        type="text"
+                                        value={firstName}
+                                        onChange={e => setFirstName(e.target.value)}
+                                        required={!isLogin && !isResetting}
+                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-muted)', color: 'white' }}
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Efternamn</label>
+                                    <input
+                                        type="text"
+                                        value={lastName}
+                                        onChange={e => setLastName(e.target.value)}
+                                        required={!isLogin && !isResetting}
+                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-muted)', color: 'white' }}
+                                    />
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem', marginBottom: '0.25rem' }}>
+                                <input
+                                    type="checkbox"
+                                    id="marketingConsent"
+                                    checked={marketingConsent}
+                                    onChange={e => setMarketingConsent(e.target.checked)}
+                                    style={{ 
+                                        width: '18px', 
+                                        height: '18px', 
+                                        accentColor: 'var(--accent-gold)',
+                                        cursor: 'pointer',
+                                        flexShrink: 0
+                                    }}
+                                />
+                                <label htmlFor="marketingConsent" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer', lineHeight: 1.4 }}>
+                                    Skicka mig nyhetsbrev med tips och exklusiva erbjudanden (Frivilligt)
+                                </label>
+                            </div>
+                        </>
                     )}
 
                     <div>
