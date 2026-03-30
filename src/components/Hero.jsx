@@ -148,8 +148,7 @@ const Hero = () => {
                             {[
                                 { text: 'Spårbar Frakt via PostNord', icon: '📬' },
                                 { text: 'Säker Betalning (Klarna)', icon: '🔒' },
-                                { text: '100% Nöjdhetsgaranti', icon: '✨' },
-                                { text: '10k+ Hanterade Band', icon: '🎞️' }
+                                { text: '100% Nöjdhetsgaranti', icon: '✨' }
                             ].map((badge, i) => (
                                 <div key={i} style={{
                                     display: 'flex',
