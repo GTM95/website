@@ -113,7 +113,7 @@ const Hero = () => {
                             margin: '0 auto 3rem auto',
                             textShadow: '0 2px 10px rgba(0,0,0,0.8)'
                         }}>
-                            Professionell digitalisering av VHS, VHS-C, Video8, Hi8, MiniDV, HDV och Super8 stumfilm.
+                            Professionell digitalisering av VHS, VHS-C, Video8, Hi8, MiniDV, HDV och Super8 utan ljud.
                             Spara dina mest värdefulla ögonblick för generationer framöver.
                         </p>
                     </FadeInSection>

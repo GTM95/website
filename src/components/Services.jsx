@@ -92,7 +92,7 @@ const Services = () => {
         },
         {
             icon: FilmIcon,
-            title: 'Smalfilm (Stumfilm)',
+            title: 'Smalfilm (utan ljud)',
             description: 'Omsorgsfull bild-för-bild-skanning av din smalfilm. Vi plockar fram detaljer och färger som legat dolda i decennier.',
             formats: ['Super8']
         },

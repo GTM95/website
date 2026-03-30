@@ -129,7 +129,7 @@ const Pricing = () => {
         },
         {
             title: 'Smalfilm',
-            formatCategory: 'Super8 (Stumfilm)',
+            formatCategory: 'Super8 (utan ljud)',
             price: '29',
             features: [
                 'Pris per meter',
