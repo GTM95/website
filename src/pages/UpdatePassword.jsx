@@ -39,8 +39,8 @@ const UpdatePassword = () => {
             return;
         }
 
-        if (password.length < 6) {
-            setError('Lösenordet måste vara minst 6 tecken långt.');
+        if (password.length < 8) {
+            setError('Lösenordet måste vara minst 8 tecken långt och innehålla en blandning av tecken.');
             setLoading(false);
             return;
         }

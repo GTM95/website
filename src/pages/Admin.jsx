@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Package, MoreVertical, Link as LinkIcon, Save, Users, CheckCircle, XCircle, Mail, ArrowLeft, Calendar, CreditCard, Tag, FileText, ExternalLink, Download } from 'lucide-react';
+import { Package, MoreVertical, Link as LinkIcon, Save, Users, CheckCircle, XCircle, Mail, ArrowLeft, Calendar, CreditCard, Tag, FileText, ExternalLink, Download, BarChart2, TrendingUp } from 'lucide-react';
 import FadeInSection from '../components/FadeInSection';
 import { generateInvoicePdf } from '../lib/generateInvoicePdf';
+import { sendOrderNotification } from '../lib/emailService';
 
 const statusColors = {
     mottagen: { color: '#60a5fa', bg: 'rgba(96, 165, 250, 0.1)' },
@@ -87,6 +88,14 @@ const Admin = () => {
         const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', id);
         if (!error) {
             setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+            
+            const order = orders.find(o => o.id === id);
+            if (order) {
+                const customer = customers.find(c => c.id === order.user_id) || order.customer;
+                if (customer && customer.email) {
+                    await sendOrderNotification(id, customer.email, customer.first_name || 'Kund', newStatus);
+                }
+            }
         }
     };
 
@@ -96,6 +105,14 @@ const Admin = () => {
             setOrders(orders.map(o => o.id === id ? { ...o, download_link: linkInput, status: 'fakturerad' } : o));
             setEditingOrder(null);
             setLinkInput('');
+            
+            const order = orders.find(o => o.id === id);
+            if (order) {
+                const customer = customers.find(c => c.id === order.user_id) || order.customer;
+                if (customer && customer.email) {
+                    await sendOrderNotification(id, customer.email, customer.first_name || 'Kund', 'fakturerad');
+                }
+            }
         }
     };
 
@@ -353,6 +370,18 @@ const Admin = () => {
                                     </span>
                                 )}
                             </button>
+                            <button
+                                onClick={() => setActiveTab('statistik')}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '0.5rem',
+                                    padding: '0.5rem 1rem', borderRadius: '6px',
+                                    border: 'none', cursor: 'pointer', fontWeight: 600,
+                                    background: activeTab === 'statistik' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
+                                    color: activeTab === 'statistik' ? '#4ade80' : 'var(--text-secondary)'
+                                }}
+                            >
+                                <BarChart2 size={18} /> Statistik
+                            </button>
                         </div>
                     </div>
 
@@ -469,6 +498,51 @@ const Admin = () => {
                                     </div>
                                 );
                             })}
+                        </div>
+                    ) : activeTab === 'statistik' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                                <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Intäkt</span>
+                                    <span style={{ fontSize: '2.5rem', fontWeight: 700, color: '#4ade80' }}>
+                                        {orders.filter(o => o.status !== 'avbruten').reduce((sum, o) => sum + (o.total_amount || 0), 0).toLocaleString('sv-SE')} kr
+                                    </span>
+                                </div>
+                                <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Antal Ordrar</span>
+                                    <span style={{ fontSize: '2.5rem', fontWeight: 700 }}>
+                                        {orders.length} st
+                                    </span>
+                                </div>
+                                <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Snittordervärde</span>
+                                    <span style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
+                                        {orders.length > 0 ? Math.round(orders.filter(o => o.status !== 'avbruten').reduce((sum, o) => sum + (o.total_amount || 0), 0) / orders.length).toLocaleString('sv-SE') : 0} kr
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div className="glass-card" style={{ padding: '2rem' }}>
+                                <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><TrendingUp size={20} color="var(--accent-gold)" /> Orderstatus Distribution</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    {Object.entries(statusColors).map(([status, config]) => {
+                                        const count = orders.filter(o => o.status === status).length;
+                                        const percentage = orders.length > 0 ? (count / orders.length) * 100 : 0;
+                                        
+                                        return (
+                                            <div key={status}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                                                    <span style={{ textTransform: 'capitalize' }}>{status}</span>
+                                                    <span>{count} st</span>
+                                                </div>
+                                                <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                                                    <div style={{ height: '100%', width: `${percentage}%`, background: config.color, borderRadius: '4px' }} />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     ) : (
                         <div className="glass-card" style={{ padding: '0', overflowX: 'auto' }}>

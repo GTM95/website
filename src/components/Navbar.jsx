@@ -25,7 +25,8 @@ const Navbar = () => {
     const navLinks = [
         { href: '/#tjanster', label: 'Tjänster' },
         { href: '/#priser', label: 'Priser' },
-        { href: '/#processen', label: 'Så fungerar det' }
+        { href: '/#processen', label: 'Så fungerar det' },
+        { href: '/kunskapsbank', label: 'Kunskapsbank', isRoute: true }
     ];
 
     const closeMobileMenu = () => {

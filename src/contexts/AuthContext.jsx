@@ -19,6 +19,9 @@ export const AuthProvider = ({ children }) => {
             } else {
                 setLoading(false);
             }
+        }).catch(err => {
+            console.error('Error fetching initial user:', err);
+            setLoading(false);
         });
 
         // Listen for auth changes
@@ -85,16 +88,25 @@ export const AuthProvider = ({ children }) => {
     const updateProfile = async (updates) => {
         if (!user) return { error: { message: "Ingen inloggad användare." } };
         
+        // Tillåt endast vissa fält att uppdateras via detta anrop för att förhindra t.ex. roll-eskalering
+        const allowedFields = ['first_name', 'last_name', 'phone', 'address', 'zip', 'city', 'marketing_consent'];
+        const filteredUpdates = Object.keys(updates)
+            .filter(key => allowedFields.includes(key))
+            .reduce((obj, key) => {
+                obj[key] = updates[key];
+                return obj;
+            }, {});
+
         try {
             const { error } = await supabase
                 .from('profiles')
-                .update(updates)
+                .update(filteredUpdates)
                 .eq('id', user.id);
 
             if (error) throw error;
             
             // Uppdatera lokal profil-state så den i UI reflekterar ändringen 
-            setProfile(prev => ({ ...prev, ...updates }));
+            setProfile(prev => ({ ...prev, ...filteredUpdates }));
             
             return { error: null };
         } catch (error) {
@@ -120,7 +132,7 @@ export const AuthProvider = ({ children }) => {
             updateProfile,
             logout
         }}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };

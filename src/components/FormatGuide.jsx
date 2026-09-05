@@ -8,6 +8,7 @@ const FormatGuide = () => {
             name: 'VHS',
             dimensions: '188 x 104 mm',
             icon: Video,
+            image: 'https://commons.wikimedia.org/wiki/Special:FilePath/VHS_cassette.jpg?width=600',
             description: 'Det vanligaste formatet för hyrfilmer och heminspelningar under 80- och 90-talet.',
             features: ['Innehåller 1/2-tums magnetband', 'Spelar ofta upp till 180 eller 240 minuter']
         },
@@ -15,6 +16,7 @@ const FormatGuide = () => {
             name: 'VHS-C',
             dimensions: '92 x 58 mm',
             icon: Camera,
+            image: 'https://commons.wikimedia.org/wiki/Special:FilePath/JVC_VHS-C_cassette.jpg?width=600',
             description: 'Kompakt version av VHS för videokameror. Lästes ofta via en adapter i en vanlig VHS-spelare.',
             features: ['Samma 1/2-tums bandbredd som VHS', 'Speltid vanligtvis 30-45 minuter']
         },
@@ -22,6 +24,7 @@ const FormatGuide = () => {
             name: 'MiniDV / HDV',
             dimensions: '66 x 48 mm',
             icon: MonitorPlay,
+            image: 'https://commons.wikimedia.org/wiki/Special:FilePath/MiniDV_cassette.jpg?width=600',
             description: 'Tidigt digitalt bandformat för högkvalitativa videokameror (sent 90-tal till 00-tal).',
             features: ['Väldigt små, kompakta kassetter', 'Digital inspelning, ger väldigt skarp bild']
         },
@@ -29,6 +32,7 @@ const FormatGuide = () => {
             name: 'Hi8 / Video8',
             dimensions: '95 x 62 mm',
             icon: FileVideo,
+            image: 'https://commons.wikimedia.org/wiki/Special:FilePath/TDK_metal_particle_Hi8_video_cassette_01.jpg?width=600',
             description: 'Ett kompakt videokassettformat från Sony som blev mycket populärt för familjekameror.',
             features: ['Mycket lik vanliga kassettband i storlek', 'Använder 8mm brett magnetband']
         },
@@ -36,6 +40,7 @@ const FormatGuide = () => {
             name: 'Kassettband (Audio)',
             dimensions: '100 x 64 mm',
             icon: Speaker,
+            image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Compact_cassette.jpg?width=600',
             description: 'De klassiska ljudkassetterna för musik och röstinspelningar från bandspelare.',
             features: ['Endast för ljud (ej video)', 'Två sidor (A och B) som vändes för uppspelning']
         },
@@ -43,6 +48,7 @@ const FormatGuide = () => {
             name: 'Smalfilm (Super 8 / 8mm)',
             dimensions: 'Rullstorlek varierar',
             icon: Film,
+            image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Super_8mm_spool_with_film_2.jpg?width=600',
             description: 'Äkta filmrullar utan magnetband. Måste skannas bild-för-bild med speciell utrustning.',
             features: ['Transparent plastfilm med perforeringshål', 'Kommer ofta i små gula eller svarta runda plastaskar']
         }
@@ -82,6 +88,11 @@ const FormatGuide = () => {
                                         <h3 style={{ margin: 0, fontSize: '1.5rem' }}>{format.name}</h3>
                                         <CheckCircle2 color="#4ade80" size={24} />
                                     </div>
+                                    {format.image && (
+                                        <div style={{ width: '100%', height: '160px', borderRadius: '8px', overflow: 'hidden', marginBottom: '1rem', position: 'relative', zIndex: 1, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.5)' }}>
+                                            <img src={format.image} alt={`Bild på ${format.name}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        </div>
+                                    )}
                                     <div style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '1rem', textTransform: 'uppercase', position: 'relative', zIndex: 1 }}>
                                         Storlek: {format.dimensions}
                                     </div>

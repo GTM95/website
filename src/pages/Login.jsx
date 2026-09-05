@@ -40,6 +40,9 @@ const Login = () => {
 
                 navigate(isAdmin ? '/admin' : '/dashboard');
             } else {
+                if (password.length < 8) {
+                    throw new Error('Lösenordet måste vara minst 8 tecken långt.');
+                }
                 const { error } = await registerEmail(email, password, firstName, lastName, marketingConsent);
                 if (error) throw error;
                 navigate('/dashboard');
